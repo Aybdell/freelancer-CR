@@ -32,6 +32,7 @@ interface ClientFormProps {
     name: string;
     email: string | null;
     phone: string | null;
+    company: string | null;
     status: string;
     notes: string | null;
   };
@@ -41,6 +42,7 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
   const [name, setName] = useState(editData?.name || "");
   const [email, setEmail] = useState(editData?.email || "");
   const [phone, setPhone] = useState(editData?.phone || "");
+  const [company, setCompany] = useState(editData?.company || "");
   const [status, setStatus] = useState(editData?.status || "Active");
   const [notes, setNotes] = useState(editData?.notes || "");
 
@@ -49,6 +51,7 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
       setName(editData?.name || "");
       setEmail(editData?.email || "");
       setPhone(editData?.phone || "");
+      setCompany(editData?.company || "");
       setStatus(editData?.status || "Active");
       setNotes(editData?.notes || "");
     }
@@ -87,6 +90,7 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
       setName("");
       setEmail("");
       setPhone("");
+      setCompany("");
       setStatus("Active");
       setNotes("");
     }
@@ -95,7 +99,7 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const data = { name, email, phone, status: status as "Lead" | "Active" | "Inactive", notes };
+    const data = { name, email, phone, company, status: status as "Lead" | "Active" | "Inactive", notes };
 
     if (editData) {
       updateMutation.mutate({ id: editData.id, ...data });
@@ -147,6 +151,16 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
                 onChange={(e) => setPhone(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="client-company">Company</Label>
+            <Input
+              id="client-company"
+              placeholder="Company name"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">

@@ -5,18 +5,16 @@ import { generateInvoiceNumber } from "@/lib/utils";
 export const invoicesRouter = createTRPCRouter({
   list: protectedProcedure
     .input(
-      z.object({
-        status: z.string().optional(),
-        projectId: z.string().optional(),
-      }).optional()
+      z
+        .object({
+          status: z.string().optional(),
+          projectId: z.string().optional(),
+        })
+        .optional()
     )
     .query(async ({ ctx, input }) => {
       const where: Record<string, unknown> = {
-        project: {
-          client: {
-            userId: ctx.session.user.id,
-          },
-        },
+        userId: ctx.user.id,
       };
 
       if (input?.status) {
@@ -48,11 +46,7 @@ export const invoicesRouter = createTRPCRouter({
       const invoice = await ctx.prisma.invoice.findFirst({
         where: {
           id: input.id,
-          project: {
-            client: {
-              userId: ctx.session.user.id,
-            },
-          },
+          userId: ctx.user.id,
         },
         include: {
           project: {
@@ -76,15 +70,15 @@ export const invoicesRouter = createTRPCRouter({
         amount: z.number().min(0, "Amount must be positive"),
         dueDate: z.date().optional().nullable(),
         status: z.enum(["Draft", "Sent", "Paid", "Overdue"]).default("Draft"),
+        notes: z.string().optional(),
         projectId: z.string().min(1, "Project is required"),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify project ownership
       const project = await ctx.prisma.project.findFirst({
         where: {
           id: input.projectId,
-          client: { userId: ctx.session.user.id },
+          userId: ctx.user.id,
         },
       });
 
@@ -97,7 +91,9 @@ export const invoicesRouter = createTRPCRouter({
       return ctx.prisma.invoice.create({
         data: {
           ...input,
+          notes: input.notes || null,
           number,
+          userId: ctx.user.id,
         },
       });
     }),
@@ -109,6 +105,7 @@ export const invoicesRouter = createTRPCRouter({
         amount: z.number().min(0).optional(),
         dueDate: z.date().optional().nullable(),
         status: z.enum(["Draft", "Sent", "Paid", "Overdue"]).optional(),
+        notes: z.string().optional(),
         projectId: z.string().optional(),
       })
     )
@@ -118,9 +115,7 @@ export const invoicesRouter = createTRPCRouter({
       const existing = await ctx.prisma.invoice.findFirst({
         where: {
           id,
-          project: {
-            client: { userId: ctx.session.user.id },
-          },
+          userId: ctx.user.id,
         },
       });
 
@@ -140,9 +135,7 @@ export const invoicesRouter = createTRPCRouter({
       const existing = await ctx.prisma.invoice.findFirst({
         where: {
           id: input.id,
-          project: {
-            client: { userId: ctx.session.user.id },
-          },
+          userId: ctx.user.id,
         },
       });
 

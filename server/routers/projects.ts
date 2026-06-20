@@ -4,16 +4,16 @@ import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 export const projectsRouter = createTRPCRouter({
   list: protectedProcedure
     .input(
-      z.object({
-        status: z.string().optional(),
-        clientId: z.string().optional(),
-      }).optional()
+      z
+        .object({
+          status: z.string().optional(),
+          clientId: z.string().optional(),
+        })
+        .optional()
     )
     .query(async ({ ctx, input }) => {
       const where: Record<string, unknown> = {
-        client: {
-          userId: ctx.session.user.id,
-        },
+        userId: ctx.user.id,
       };
 
       if (input?.status) {
@@ -44,9 +44,7 @@ export const projectsRouter = createTRPCRouter({
       const project = await ctx.prisma.project.findFirst({
         where: {
           id: input.id,
-          client: {
-            userId: ctx.session.user.id,
-          },
+          userId: ctx.user.id,
         },
         include: {
           client: true,
@@ -72,13 +70,13 @@ export const projectsRouter = createTRPCRouter({
           .default("Not Started"),
         amount: z.number().min(0).optional(),
         deadline: z.date().optional().nullable(),
+        notes: z.string().optional(),
         clientId: z.string().min(1, "Client is required"),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify client ownership
       const client = await ctx.prisma.client.findFirst({
-        where: { id: input.clientId, userId: ctx.session.user.id },
+        where: { id: input.clientId, userId: ctx.user.id },
       });
 
       if (!client) {
@@ -86,7 +84,11 @@ export const projectsRouter = createTRPCRouter({
       }
 
       return ctx.prisma.project.create({
-        data: input,
+        data: {
+          ...input,
+          notes: input.notes || null,
+          userId: ctx.user.id,
+        },
       });
     }),
 
@@ -100,6 +102,7 @@ export const projectsRouter = createTRPCRouter({
           .optional(),
         amount: z.number().min(0).optional().nullable(),
         deadline: z.date().optional().nullable(),
+        notes: z.string().optional(),
         clientId: z.string().optional(),
       })
     )
@@ -109,7 +112,7 @@ export const projectsRouter = createTRPCRouter({
       const existing = await ctx.prisma.project.findFirst({
         where: {
           id,
-          client: { userId: ctx.session.user.id },
+          userId: ctx.user.id,
         },
       });
 
@@ -129,7 +132,7 @@ export const projectsRouter = createTRPCRouter({
       const existing = await ctx.prisma.project.findFirst({
         where: {
           id: input.id,
-          client: { userId: ctx.session.user.id },
+          userId: ctx.user.id,
         },
       });
 

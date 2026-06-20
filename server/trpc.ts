@@ -1,15 +1,17 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import { getServerSession } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { authOptions } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 
 export const createTRPCContext = async () => {
-  const session = await getServerSession(authOptions);
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return {
-    session,
+    user,
     prisma,
   };
 };
@@ -34,12 +36,12 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
+      user: ctx.user,
     },
   });
 });

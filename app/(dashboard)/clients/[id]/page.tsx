@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { ClientForm } from "@/components/clients/client-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Mail, Phone, Pencil, FolderKanban, FileText } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Pencil, FolderKanban, FileText, Building2 } from "lucide-react";
 import type {
   ClientDetail,
   ClientProject,
@@ -108,6 +108,13 @@ export default function ClientDetailPage() {
             <span className="text-slate-500">Phone:</span>
             <span className="font-medium text-slate-900">
               {client.phone || "—"}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <Building2 className="h-4 w-4 text-slate-400" />
+            <span className="text-slate-500">Company:</span>
+            <span className="font-medium text-slate-900">
+              {client.company || "—"}
             </span>
           </div>
           {client.notes && (

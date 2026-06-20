@@ -3,6 +3,7 @@ export interface Client {
   name: string;
   email: string | null;
   phone: string | null;
+  company: string | null;
   status: string;
   notes: string | null;
   userId: string;
@@ -17,6 +18,8 @@ export interface Project {
   status: string;
   amount: number | null;
   deadline: Date | null;
+  notes: string | null;
+  userId: string;
   clientId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -30,6 +33,8 @@ export interface Invoice {
   amount: number;
   dueDate: Date | null;
   status: string;
+  notes: string | null;
+  userId: string;
   projectId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +50,8 @@ export interface ClientInvoice {
   amount: number;
   dueDate: Date | null;
   status: string;
+  notes: string | null;
+  userId: string;
   projectId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -56,13 +63,25 @@ export interface ClientProject {
   status: string;
   amount: number | null;
   deadline: Date | null;
+  notes: string | null;
+  userId: string;
   clientId: string;
   createdAt: Date;
   updatedAt: Date;
   invoices: ClientInvoice[];
 }
 
-export interface ClientDetail extends Omit<Client, "_count"> {
+export interface ClientDetail {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  status: string;
+  notes: string | null;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
   projects: ClientProject[];
 }
 

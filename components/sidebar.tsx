@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -24,13 +26,38 @@ const navItems = [
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
-  const initials = session?.user?.name
-    ?.split(" ")
-    .map((n) => n[0])
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const displayName =
+    user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+
+  const initials = displayName
+    .split(" ")
+    .map((n: string) => n[0])
     .join("")
-    .toUpperCase() || session?.user?.email?.[0]?.toUpperCase() || "U";
+    .toUpperCase()
+    .slice(0, 2);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <div
@@ -39,7 +66,6 @@ export function Sidebar({ className }: { className?: string }) {
         className
       )}
     >
-      {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25">
           <Zap className="h-5 w-5 text-white" />
@@ -52,7 +78,6 @@ export function Sidebar({ className }: { className?: string }) {
 
       <Separator className="bg-slate-700/50" />
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => {
           const isActive =
@@ -90,23 +115,20 @@ export function Sidebar({ className }: { className?: string }) {
 
       <Separator className="bg-slate-700/50" />
 
-      {/* User Info */}
       <div className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={session?.user?.image || ""} />
+            <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
             <AvatarFallback className="text-xs">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="truncate text-sm font-medium text-white">
-              {session?.user?.name || "User"}
+              {displayName}
             </p>
-            <p className="truncate text-xs text-slate-400">
-              {session?.user?.email}
-            </p>
+            <p className="truncate text-xs text-slate-400">{user?.email}</p>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={handleSignOut}
             className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
             title="Sign out"
           >

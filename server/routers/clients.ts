@@ -4,14 +4,16 @@ import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 export const clientsRouter = createTRPCRouter({
   list: protectedProcedure
     .input(
-      z.object({
-        status: z.string().optional(),
-        search: z.string().optional(),
-      }).optional()
+      z
+        .object({
+          status: z.string().optional(),
+          search: z.string().optional(),
+        })
+        .optional()
     )
     .query(async ({ ctx, input }) => {
       const where: Record<string, unknown> = {
-        userId: ctx.session.user.id,
+        userId: ctx.user.id,
       };
 
       if (input?.status) {
@@ -20,8 +22,9 @@ export const clientsRouter = createTRPCRouter({
 
       if (input?.search) {
         where.OR = [
-          { name: { contains: input.search } },
-          { email: { contains: input.search } },
+          { name: { contains: input.search, mode: "insensitive" } },
+          { email: { contains: input.search, mode: "insensitive" } },
+          { company: { contains: input.search, mode: "insensitive" } },
         ];
       }
 
@@ -42,7 +45,7 @@ export const clientsRouter = createTRPCRouter({
       const client = await ctx.prisma.client.findFirst({
         where: {
           id: input.id,
-          userId: ctx.session.user.id,
+          userId: ctx.user.id,
         },
         include: {
           projects: {
@@ -67,6 +70,7 @@ export const clientsRouter = createTRPCRouter({
         name: z.string().min(1, "Name is required"),
         email: z.string().email().optional().or(z.literal("")),
         phone: z.string().optional(),
+        company: z.string().optional(),
         status: z.enum(["Lead", "Active", "Inactive"]).default("Active"),
         notes: z.string().optional(),
       })
@@ -76,7 +80,8 @@ export const clientsRouter = createTRPCRouter({
         data: {
           ...input,
           email: input.email || null,
-          userId: ctx.session.user.id,
+          company: input.company || null,
+          userId: ctx.user.id,
         },
       });
     }),
@@ -88,6 +93,7 @@ export const clientsRouter = createTRPCRouter({
         name: z.string().min(1).optional(),
         email: z.string().email().optional().or(z.literal("")),
         phone: z.string().optional(),
+        company: z.string().optional(),
         status: z.enum(["Lead", "Active", "Inactive"]).optional(),
         notes: z.string().optional(),
       })
@@ -95,9 +101,8 @@ export const clientsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
-      // Verify ownership
       const existing = await ctx.prisma.client.findFirst({
-        where: { id, userId: ctx.session.user.id },
+        where: { id, userId: ctx.user.id },
       });
 
       if (!existing) {
@@ -109,6 +114,7 @@ export const clientsRouter = createTRPCRouter({
         data: {
           ...data,
           email: data.email || null,
+          company: data.company || null,
         },
       });
     }),
@@ -117,7 +123,7 @@ export const clientsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const existing = await ctx.prisma.client.findFirst({
-        where: { id: input.id, userId: ctx.session.user.id },
+        where: { id: input.id, userId: ctx.user.id },
       });
 
       if (!existing) {

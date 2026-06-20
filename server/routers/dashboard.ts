@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 
 export const dashboardRouter = createTRPCRouter({
   getStats: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
+    const userId = ctx.user.id;
 
     const [activeClients, activeProjects, unpaidInvoices, overdueInvoices] =
       await Promise.all([
@@ -11,13 +11,13 @@ export const dashboardRouter = createTRPCRouter({
         }),
         ctx.prisma.project.count({
           where: {
-            client: { userId },
+            userId,
             status: { in: ["Not Started", "In Progress"] },
           },
         }),
         ctx.prisma.invoice.aggregate({
           where: {
-            project: { client: { userId } },
+            userId,
             status: { in: ["Draft", "Sent", "Overdue"] },
           },
           _sum: { amount: true },
@@ -25,7 +25,7 @@ export const dashboardRouter = createTRPCRouter({
         }),
         ctx.prisma.invoice.count({
           where: {
-            project: { client: { userId } },
+            userId,
             status: "Overdue",
           },
         }),
@@ -41,11 +41,11 @@ export const dashboardRouter = createTRPCRouter({
   }),
 
   getRecentActivity: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
+    const userId = ctx.user.id;
 
     const [recentProjects, recentInvoices] = await Promise.all([
       ctx.prisma.project.findMany({
-        where: { client: { userId } },
+        where: { userId },
         include: {
           client: { select: { name: true } },
         },
@@ -53,7 +53,7 @@ export const dashboardRouter = createTRPCRouter({
         take: 5,
       }),
       ctx.prisma.invoice.findMany({
-        where: { project: { client: { userId } } },
+        where: { userId },
         include: {
           project: {
             include: {
@@ -66,7 +66,6 @@ export const dashboardRouter = createTRPCRouter({
       }),
     ]);
 
-    // Merge and sort by updatedAt
     const activities = [
       ...recentProjects.map((p) => ({
         id: p.id,

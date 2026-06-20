@@ -1,10 +1,11 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-// Placeholder URL is only used for `prisma generate` when DATABASE_URL is not set (e.g. CI install).
+// Use DIRECT_URL for migrations; fall back to DATABASE_URL for generate/CI.
 const databaseUrl =
+  process.env.DIRECT_URL ??
   process.env.DATABASE_URL ??
-  "mysql://user:password@localhost:3306/freelancer_crm";
+  "postgresql://postgres:password@localhost:5432/postgres";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

@@ -1,37 +1,24 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-function createPrismaClient(): PrismaClient {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error(
-      "DATABASE_URL is not set. Add it in Vercel → Settings → Environment Variables."
-    );
-  }
-
-  const adapter = new PrismaMariaDb(databaseUrl);
-  return new PrismaClient({ adapter });
+function createPrismaClient() {
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["query"] : [],
+  });
 }
 
-function getPrismaClient(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = createPrismaClient();
-  }
-  return globalForPrisma.prisma;
-}
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    const client = getPrismaClient();
-    const value = client[prop as keyof PrismaClient];
-    if (typeof value === "function") {
-      return (value as (...args: unknown[]) => unknown).bind(client);
-    }
-    return value;
-  },
-});
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export default prisma;

@@ -14,6 +14,7 @@ import {
   ArrowRight,
   FileText,
 } from "lucide-react";
+import type { ActivityItem } from "@/types/crm";
 
 const statCards = [
   {
@@ -126,7 +127,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {activity.map((item) => (
+              {(activity as ActivityItem[]).map((item: ActivityItem) => (
                 <div
                   key={`${item.type}-${item.id}`}
                   className="flex items-center justify-between py-4 first:pt-0 last:pb-0"

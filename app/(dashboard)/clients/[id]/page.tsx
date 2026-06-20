@@ -20,13 +20,12 @@ import {
 import { ClientForm } from "@/components/clients/client-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Mail, Phone, Pencil, FolderKanban, FileText } from "lucide-react";
-import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "@/server/routers/_app";
-
-type ClientDetail = NonNullable<inferRouterOutputs<AppRouter>["clients"]["getById"]>;
-type ClientProject = ClientDetail["projects"][number];
-type ClientInvoice = ClientProject["invoices"][number];
-type InvoiceWithProject = ClientInvoice & { projectTitle: string };
+import type {
+  ClientDetail,
+  ClientProject,
+  ClientInvoice,
+  InvoiceWithProject,
+} from "@/types/crm";
 
 export default function ClientDetailPage() {
   const params = useParams();
@@ -59,11 +58,12 @@ export default function ClientDetailPage() {
     );
   }
 
-  const allInvoices: InvoiceWithProject[] = client.projects.flatMap((p: ClientProject) =>
-    p.invoices.map((inv: ClientInvoice) => ({
-      ...inv,
-      projectTitle: p.title,
-    }))
+  const allInvoices: InvoiceWithProject[] = (client.projects as ClientProject[]).flatMap(
+    (p: ClientProject) =>
+      p.invoices.map((inv: ClientInvoice) => ({
+        ...inv,
+        projectTitle: p.title,
+      }))
   );
 
   return (
@@ -225,7 +225,7 @@ export default function ClientDetailPage() {
       <ClientForm
         open={showEditForm}
         onOpenChange={setShowEditForm}
-        editData={client}
+        editData={client as ClientDetail}
       />
     </div>
   );

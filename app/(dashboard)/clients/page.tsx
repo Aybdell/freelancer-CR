@@ -21,10 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ClientForm } from "@/components/clients/client-form";
-import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "@/server/routers/_app";
-
-type Client = inferRouterOutputs<AppRouter>["clients"]["list"][number];
+import type { Client } from "@/types/crm";
 import { MoreHorizontal, Pencil, Archive, Eye, Users, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -128,7 +125,7 @@ export default function ClientsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients.map((client) => (
+              {(clients as Client[]).map((client: Client) => (
                 <TableRow key={client.id}>
                   <TableCell>
                     <Link

@@ -28,10 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProjectForm } from "@/components/projects/project-form";
-import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "@/server/routers/_app";
-
-type Project = inferRouterOutputs<AppRouter>["projects"]["list"][number];
+import type { Project } from "@/types/crm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoreHorizontal, Pencil, Trash2, FolderKanban, Plus } from "lucide-react";
 
@@ -120,7 +117,7 @@ export default function ProjectsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projects.map((project) => (
+              {(projects as Project[]).map((project: Project) => (
                 <TableRow key={project.id}>
                   <TableCell className="font-medium text-slate-900">
                     {project.title}

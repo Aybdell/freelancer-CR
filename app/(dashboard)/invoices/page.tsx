@@ -28,10 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { InvoiceForm } from "@/components/invoices/invoice-form";
-import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "@/server/routers/_app";
-
-type Invoice = inferRouterOutputs<AppRouter>["invoices"]["list"][number];
+import type { Invoice } from "@/types/crm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoreHorizontal, Pencil, CheckCircle, FileText, Plus } from "lucide-react";
 
@@ -121,7 +118,7 @@ export default function InvoicesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice) => (
+              {(invoices as Invoice[]).map((invoice: Invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium text-slate-900">
                     {invoice.number}

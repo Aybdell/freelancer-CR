@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -18,18 +20,32 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: { full_name: name },
+        },
       });
 
-      if (signInError) {
-        setError(signInError.message);
+      if (signUpError) {
+        setError(signUpError.message);
       } else {
-        router.push("/");
-        router.refresh();
+        router.push("/login?registered=true");
       }
     } catch {
       setError("Something went wrong");
@@ -49,10 +65,10 @@ export default function LoginPage() {
         </div>
 
         <h1 className="text-[22px] font-semibold text-[#f0f0f0] text-center">
-          Welcome back
+          Create your account
         </h1>
         <p className="text-sm text-[#888888] text-center mt-1">
-          Sign in to your Dev AI account
+          Start reviewing code for free
         </p>
       </div>
 
@@ -62,6 +78,20 @@ export default function LoginPage() {
             {error}
           </div>
         )}
+
+        <div className="mb-4">
+          <label className="block text-[13px] text-[#888888] mb-1.5">
+            Full Name
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="John Doe"
+            required
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-[#f0f0f0] placeholder:text-[#555555] focus:outline-none focus:border-[#7c3aed] transition-colors"
+          />
+        </div>
 
         <div className="mb-4">
           <label className="block text-[13px] text-[#888888] mb-1.5">
@@ -85,7 +115,21 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
+            placeholder="Create a password"
+            required
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-[#f0f0f0] placeholder:text-[#555555] focus:outline-none focus:border-[#7c3aed] transition-colors"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-[13px] text-[#888888] mb-1.5">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm your password"
             required
             className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-[#f0f0f0] placeholder:text-[#555555] focus:outline-none focus:border-[#7c3aed] transition-colors"
           />
@@ -99,18 +143,18 @@ export default function LoginPage() {
           {isLoading ? (
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Signing in...
+              Creating account...
             </span>
           ) : (
-            "Sign in"
+            "Create account"
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-[13px] text-[#888888]">
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-[#7c3aed] hover:text-[#a78bfa] transition-colors no-underline">
-          Sign up
+        Already have an account?{" "}
+        <Link href="/login" className="text-[#7c3aed] hover:text-[#a78bfa] transition-colors no-underline">
+          Sign in
         </Link>
       </p>
     </div>

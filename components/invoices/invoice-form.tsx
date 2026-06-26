@@ -124,19 +124,18 @@ export function InvoiceForm({
               : "Fill in the details to create a new invoice."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {!editData && (
             <div className="space-y-2">
               <Label>Invoice Number</Label>
-              <Input value={previewNumber} disabled className="bg-slate-50" />
-              <p className="text-xs text-slate-500">Auto-generated on save</p>
+              <Input value={previewNumber} disabled className="bg-slate-50 text-slate-500" />
             </div>
           )}
 
           {editData && (
             <div className="space-y-2">
               <Label>Invoice Number</Label>
-              <Input value={editData.number} disabled className="bg-slate-50" />
+              <Input value={editData.number} disabled className="bg-slate-50 text-slate-500" />
             </div>
           )}
 
@@ -149,7 +148,7 @@ export function InvoiceForm({
               <SelectContent>
                 {projects?.map((project) => (
                   <SelectItem key={project.id} value={project.id}>
-                    {project.title} — {project.client.name}
+                    {project.title} &mdash; {project.client.name}
                   </SelectItem>
                 ))}
               </SelectContent>

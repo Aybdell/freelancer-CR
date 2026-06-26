@@ -59,7 +59,7 @@ export default function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Projects</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Projects</h1>
           <p className="mt-1 text-sm text-slate-500">
             Track project status, deadlines, and amounts.
           </p>
@@ -90,12 +90,12 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : !projects?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <FolderKanban className="h-8 w-8 text-slate-400" />
+        <div className="flex flex-col items-center justify-center rounded-[12px] border-2 border-dashed border-slate-200 bg-white py-16 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[10px] bg-slate-100">
+            <FolderKanban className="h-7 w-7 text-slate-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-slate-900">No projects yet</h3>
-          <p className="mt-2 text-sm text-slate-500">
+          <h3 className="mt-4 text-base font-semibold text-slate-900">No projects yet</h3>
+          <p className="mt-1 text-sm text-slate-500">
             Create your first project to start tracking work.
           </p>
           <Button className="mt-6" onClick={() => setShowForm(true)}>
@@ -104,7 +104,7 @@ export default function ProjectsPage() {
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-[12px] border border-slate-200 bg-white shadow-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -132,7 +132,7 @@ export default function ProjectsPage() {
                     {formatDate(project.deadline)}
                   </TableCell>
                   <TableCell className="text-slate-500">
-                    {project.amount != null ? formatCurrency(project.amount) : "—"}
+                    {project.amount != null ? formatCurrency(project.amount) : "\u2014"}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>

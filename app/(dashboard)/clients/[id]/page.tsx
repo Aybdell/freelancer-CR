@@ -77,7 +77,7 @@ export default function ClientDetailPage() {
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-2xl font-semibold text-slate-900">
                 {client.name}
               </h1>
               <StatusBadge status={client.status} />
@@ -93,28 +93,28 @@ export default function ClientDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Contact Information</CardTitle>
+          <CardTitle>Contact Information</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="flex items-center gap-3 text-sm">
             <Mail className="h-4 w-4 text-slate-400" />
             <span className="text-slate-500">Email:</span>
             <span className="font-medium text-slate-900">
-              {client.email || "—"}
+              {client.email || "\u2014"}
             </span>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Phone className="h-4 w-4 text-slate-400" />
             <span className="text-slate-500">Phone:</span>
             <span className="font-medium text-slate-900">
-              {client.phone || "—"}
+              {client.phone || "\u2014"}
             </span>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Building2 className="h-4 w-4 text-slate-400" />
             <span className="text-slate-500">Company:</span>
             <span className="font-medium text-slate-900">
-              {client.company || "—"}
+              {client.company || "\u2014"}
             </span>
           </div>
           {client.notes && (
@@ -140,7 +140,7 @@ export default function ClientDetailPage() {
 
         <TabsContent value="projects">
           {client.projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-[12px] border-2 border-dashed border-slate-200 bg-white py-12 text-center">
               <FolderKanban className="h-8 w-8 text-slate-400" />
               <p className="mt-3 text-sm font-medium text-slate-900">No projects yet</p>
               <p className="mt-1 text-sm text-slate-500">
@@ -151,7 +151,7 @@ export default function ClientDetailPage() {
               </Button>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="rounded-[12px] border border-slate-200 bg-white shadow-card">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -172,7 +172,7 @@ export default function ClientDetailPage() {
                         {formatDate(project.deadline)}
                       </TableCell>
                       <TableCell className="text-slate-500">
-                        {project.amount != null ? formatCurrency(project.amount) : "—"}
+                        {project.amount != null ? formatCurrency(project.amount) : "\u2014"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -184,7 +184,7 @@ export default function ClientDetailPage() {
 
         <TabsContent value="invoices">
           {allInvoices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-[12px] border-2 border-dashed border-slate-200 bg-white py-12 text-center">
               <FileText className="h-8 w-8 text-slate-400" />
               <p className="mt-3 text-sm font-medium text-slate-900">No invoices yet</p>
               <p className="mt-1 text-sm text-slate-500">
@@ -195,7 +195,7 @@ export default function ClientDetailPage() {
               </Button>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="rounded-[12px] border border-slate-200 bg-white shadow-card">
               <Table>
                 <TableHeader>
                   <TableRow>

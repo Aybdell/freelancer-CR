@@ -119,7 +119,7 @@ export function ClientForm({ open, onOpenChange, editData }: ClientFormProps) {
               : "Fill in the details to add a new client."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="client-name">Name *</Label>
             <Input

@@ -124,7 +124,7 @@ export function ProjectForm({
               : "Fill in the details to create a new project."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="project-title">Title *</Label>
             <Input

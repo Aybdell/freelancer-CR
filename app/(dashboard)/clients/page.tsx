@@ -56,10 +56,9 @@ export default function ClientsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Clients</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Clients</h1>
           <p className="mt-1 text-sm text-slate-500">
             Manage your client relationships and contacts.
           </p>
@@ -70,7 +69,6 @@ export default function ClientsPage() {
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <Input
           placeholder="Search clients..."
@@ -91,7 +89,6 @@ export default function ClientsPage() {
         </Select>
       </div>
 
-      {/* Table */}
       {isLoading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
@@ -99,12 +96,12 @@ export default function ClientsPage() {
           ))}
         </div>
       ) : !clients?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <Users className="h-8 w-8 text-slate-400" />
+        <div className="flex flex-col items-center justify-center rounded-[12px] border-2 border-dashed border-slate-200 bg-white py-16 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[10px] bg-slate-100">
+            <Users className="h-7 w-7 text-slate-400" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-slate-900">No clients yet</h3>
-          <p className="mt-2 text-sm text-slate-500">
+          <h3 className="mt-4 text-base font-semibold text-slate-900">No clients yet</h3>
+          <p className="mt-1 text-sm text-slate-500">
             Get started by adding your first client.
           </p>
           <Button className="mt-6" onClick={() => setShowForm(true)}>
@@ -113,7 +110,7 @@ export default function ClientsPage() {
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-[12px] border border-slate-200 bg-white shadow-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -130,13 +127,13 @@ export default function ClientsPage() {
                   <TableCell>
                     <Link
                       href={`/clients/${client.id}`}
-                      className="font-medium text-slate-900 hover:text-indigo-600 transition-colors"
+                      className="font-medium text-slate-900 hover:text-blue-600 transition-colors"
                     >
                       {client.name}
                     </Link>
                   </TableCell>
                   <TableCell className="text-slate-500">
-                    {client.email || "—"}
+                    {client.email || "\u2014"}
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={client.status} />
@@ -186,7 +183,6 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {/* Form Dialog */}
       <ClientForm
         open={showForm}
         onOpenChange={setShowForm}
